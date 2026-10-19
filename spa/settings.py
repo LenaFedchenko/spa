@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'comments',
     'attachments',
-    'users'
+    'users',
+    "captcha",
 ]
 
 MIDDLEWARE = [
