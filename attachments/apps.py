@@ -2,4 +2,8 @@ from django.apps import AppConfig
 
 
 class AttachmentsConfig(AppConfig):
-    name = 'attachments'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "attachments"
+
+    def ready(self):
+        import attachments.signals
