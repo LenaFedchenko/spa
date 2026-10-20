@@ -9,6 +9,7 @@ from .validators import validate_comment_html
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Comment
         fields = [
@@ -19,12 +20,16 @@ class CommentSerializer(serializers.ModelSerializer):
             "text",
             "created_at",
             "parent",
+            "user",
         ]
+
         read_only_fields = [
             "id",
             "created_at",
             "parent",
+            "user",
         ]
+
 
     def validate_user_name(self, value):
         if not re.fullmatch(r"[a-zA-Z0-9]+", value):

@@ -40,34 +40,41 @@ def get_comment(request, id):
     serializer = CommentSerializer(comment_by_id)
     return Response(serializer.data)
 
+
 @api_view(["POST"])
 def create_comment(request):
     serializer = CreateCommentSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        user = None
 
-    if serializer.is_valid():
-        serializer.save(parent=None)
-        return Response(serializer.data, status=201)
+    serializer.save(user=user, parent=None)
+    return Response(serializer.data, status=201)
 
-    return Response(serializer.errors, status=400)
+
 
 
 
 @api_view(["GET", "POST"])
 def manage_replies(request, id):
     parent = get_object_or_404(Comment, id=id)
-
     if request.method == "GET":
         replies = Comment.objects.filter(parent=parent)
         serializer = CommentSerializer(replies, many=True)
         return Response(serializer.data)
 
     serializer = CreateCommentSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        user = None
 
-    if serializer.is_valid():
-        serializer.save(parent=parent)
-        return Response(serializer.data, status=201)
+    serializer.save(user=user, parent=parent)
+    return Response(serializer.data, status=201)
 
-    return Response(serializer.errors, status=400)
 
 
 

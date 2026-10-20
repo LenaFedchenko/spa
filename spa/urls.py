@@ -29,7 +29,8 @@ urlpatterns = [
     path("comments/<int:id>/replies/", manage_replies),
     path("api/captcha/", get_captcha),
     path("captcha/", include("captcha.urls")),
-    path("comments/<int:comment_id>/attachments/", upload_attachment)
+    path("comments/<int:comment_id>/attachments/", upload_attachment),
+    path("api/auth/", include("users.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(
