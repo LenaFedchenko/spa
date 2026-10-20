@@ -16,14 +16,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from attachments.views import upload_attachment
 from comments.views import create_comment, get_captcha, get_comment, get_comments, manage_replies
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("comments/", get_comments),
-    path("comments/<int:id>", get_comment),
+    path("comments/<int:id>/", get_comment),
     path("comments/create/", create_comment),
     path("comments/<int:id>/replies/", manage_replies),
     path("api/captcha/", get_captcha),
     path("captcha/", include("captcha.urls")),
+    path("comments/<int:comment_id>/attachments/", upload_attachment)
 ]
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
