@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8+8e&0gpfcgej2)j#-x+8b&s0tb-p0asu%b+t&$(y57q4(5_0^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -97,11 +101,11 @@ WSGI_APPLICATION = 'spa.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "spa_db",
-        "USER": "spaLena",
-        "PASSWORD": "spaLenaPass",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.getenv("POSTGRES_DB", "spa_db"),
+        "USER": os.getenv("POSTGRES_USER", "spaLena"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "spaLenaPass"),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
 
@@ -156,14 +160,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 ASGI_APPLICATION = "spa.asgi.application"
 
 
-
+REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
                 {
-                    "address": "redis://127.0.0.1:6379",
+                    "address": REDIS_URL,
                     "socket_timeout": None,
                 }
             ],
@@ -171,11 +175,10 @@ CHANNEL_LAYERS = {
     },
 }
 
-
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": f"{REDIS_URL}/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -183,10 +186,8 @@ CACHES = {
     }
 }
 
-
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/2"
-
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/2"
+CELERY_BROKER_URL = f"{REDIS_URL}/2"
+CELERY_RESULT_BACKEND = f"{REDIS_URL}/2"
 
 CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
